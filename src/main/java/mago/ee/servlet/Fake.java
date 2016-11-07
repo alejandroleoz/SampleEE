@@ -1,10 +1,9 @@
 package mago.ee.servlet;
 
 import mago.ee.Book;
+import mago.ee.BookManager;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
+import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -17,19 +16,14 @@ import java.io.IOException;
 )
 public class Fake extends HttpServlet {
 
+    @EJB
+    private BookManager bookManager;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("books-PU");
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
-
-        Book book = new Book();
-        book.setName("El Principito");
-        book.setDescription("--");
-
-        entityManager.getTransaction().begin();
-        entityManager.persist(book);
-        entityManager.getTransaction().commit();
-        entityManager.close();
+        Book book = this.bookManager.createBook("El Principito");
+        resp.getWriter().print("Creado con id " + book.getId());
     }
+
+
 }
